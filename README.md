@@ -4,7 +4,7 @@
 Features:
 * As a wrapper for HTML5 applications;
 * As a wrapper for your sites;
-* Javascript and Css support;
+* Javascript and CSS support;
 * Low weight after assembly (about 2 mb);
 
 See also:
