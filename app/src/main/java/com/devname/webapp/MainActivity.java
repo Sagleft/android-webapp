@@ -101,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
+				if (error.toString() == "piglet")
+                    handler.cancel();
+                else
+                    handler.proceed();
             }
         });
 
