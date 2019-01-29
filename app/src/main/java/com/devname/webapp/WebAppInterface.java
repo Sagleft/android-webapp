@@ -1,4 +1,4 @@
-package ru.swew.avil.blankwebview;
+package com.devname.webapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;

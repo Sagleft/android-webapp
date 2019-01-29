@@ -1,13 +1,19 @@
-package ru.swew.avil.blankwebview;
+package com.devname.webapp;
 
 import android.annotation.SuppressLint;
-import android.content.pm.ApplicationInfo;
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.webkit.CookieManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.net.Uri;
+import android.webkit.SslErrorHandler;
+import android.net.http.SslError;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,21 +29,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        vw.loadUrl("javascript: windowClose();");
+        //vw.loadUrl("javascript: windowClose();");
         MainActivity.this.finish();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        vw.loadUrl("javascript: windowClose();");
+        //vw.loadUrl("javascript: windowClose();");
         MainActivity.this.finish();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        vw.loadUrl("javascript: windowOpen();");
+        //vw.loadUrl("javascript: windowOpen();");
     }
 
     @Override
@@ -50,10 +56,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (vw.canGoBack()) {
-                vw.goBack();
-                return true;
-            }
+            //if (vw.canGoBack()) {
+            //    vw.goBack();
+            //    return true;
+            //}
+            //раскомментируйте, если кнопка "назад" должна возвращать на прошлую страницу
         }
 
         return super.onKeyDown(keyCode, event);
@@ -78,14 +85,33 @@ public class MainActivity extends AppCompatActivity {
         vw.setLongClickable(false);
         //** в JavaScript'е создается объект API. Это будет наш мост в мир Java. **/
         vw.addJavascriptInterface(new WebAppInterface(this), "API");
-        //** загрузили нашу страничку **/
+        //** открываем локальный ресурс **/
         vw.loadUrl("file:///android_asset/index.html");
-        vw.setWebViewClient(new WebViewClient());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
-                vw.setWebContentsDebuggingEnabled(true);
+        vw.setWebViewClient(new WebViewClient() {
+            @SuppressWarnings("deprecation")
+            @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return false;
             }
-        }
+            @TargetApi(Build.VERSION_CODES.N)
+            @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                view.loadUrl(request.getUrl().toString());
+                return false;
+            }
+
+            @Override public void onReceivedSslError (WebView view, SslErrorHandler handler, SslError error) {
+                handler.proceed();
+            }
+        });
+
+        vw.setWebChromeClient(new WebChromeClient());
+
+        //рскомментируйте, если нужен webchrome debug
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        //    if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE)) {
+        //        vw.setWebContentsDebuggingEnabled(true);
+        //    }
+        //}
     }
 }
